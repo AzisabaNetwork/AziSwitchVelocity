@@ -8,13 +8,14 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.azisaba.aziswitchvelocity.commands.AziSwitchReloadCommand;
+import net.azisaba.aziswitchvelocity.commands.NewSwitchGroupCommand;
 import net.azisaba.aziswitchvelocity.commands.SwitchCommand;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "aziswitch", name = "AziSwitchVelocity", version = "1.0.0", authors = "Azisaba Network",
+@Plugin(id = "aziswitch", name = "AziSwitchVelocity", version = "1.1.0", authors = "Azisaba Network",
         description = "Switch permission groups.", dependencies = @Dependency(id = "luckperms"))
 public class AziSwitchVelocity {
     public static AziSwitchVelocity instance;
@@ -50,6 +51,7 @@ public class AziSwitchVelocity {
     public void onProxyInitialize(ProxyInitializeEvent e) {
         config.reload();
         AziSwitchReloadCommand.register(server);
+        NewSwitchGroupCommand.register(server);
         SwitchCommand.register(server);
     }
 }
