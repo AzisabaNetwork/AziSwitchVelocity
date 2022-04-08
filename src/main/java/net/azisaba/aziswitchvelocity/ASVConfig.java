@@ -28,6 +28,9 @@ public class ASVConfig {
 
     @SuppressWarnings("UnstableApiUsage")
     public void reload() {
+        contextualGroups.clear();
+        nonContextualGroups.clear();
+        servers.clear();
         Path configPath = AziSwitchVelocity.instance.getDataDirectory().resolve("config.yml");
         if (!Files.exists(configPath)) {
             try {
