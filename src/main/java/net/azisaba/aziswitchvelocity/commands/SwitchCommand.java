@@ -89,6 +89,9 @@ public class SwitchCommand {
     }
 
     private static void switchGroups(@NotNull Player player, @NotNull List<String> groups, @NotNull String server) {
+        Objects.requireNonNull(player, "player cannot be null");
+        Objects.requireNonNull(groups, "groups cannot be null");
+        Objects.requireNonNull(server, "server cannot be null");
         List<String> contextualGroups = AziSwitchVelocity.instance.getConfig().getContextualGroups();
         User user = LP.getPlayerAdapter(Player.class).getUser(player);
         boolean acted = false;
@@ -106,6 +109,9 @@ public class SwitchCommand {
     }
 
     private static boolean doSwitch(@NotNull Player player, @NotNull User user, @NotNull String group, @Nullable String server) {
+        Objects.requireNonNull(player, "player cannot be null");
+        Objects.requireNonNull(user, "user cannot be null");
+        Objects.requireNonNull(group, "group cannot be null");
         NodeMap map = user.getData(DataType.NORMAL);
         Node adminNode = findNode(map, group, server);
         String serverName = Objects.requireNonNullElse(server, "global");
