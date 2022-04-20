@@ -104,7 +104,7 @@ public class SwitchCommand {
             LP.getUserManager().saveUser(user);
             LP.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
         } else {
-            player.sendMessage(Component.text("権限がありません。PerfectBoat#0001に泣きつきましょう！", NamedTextColor.RED));
+            player.sendMessage(Component.text("権限がありません。" + Util.WHO + "に泣きつきましょう！", NamedTextColor.RED));
         }
     }
 
