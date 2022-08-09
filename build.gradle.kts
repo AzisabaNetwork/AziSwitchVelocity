@@ -3,13 +3,13 @@ plugins {
 }
 
 group = "net.azisaba"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     mavenCentral()
 
     // velocity repo
-    maven { url = uri("https://nexus.velocitypowered.com/repository/maven-public/") }
+    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
 }
 
 dependencies {

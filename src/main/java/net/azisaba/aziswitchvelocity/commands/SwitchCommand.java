@@ -1,11 +1,8 @@
 package net.azisaba.aziswitchvelocity.commands;
 
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
@@ -34,16 +31,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class SwitchCommand {
-    private static final SimpleCommandExceptionType EXPECTED_PLAYER = new SimpleCommandExceptionType(new LiteralMessage("Expected a player"));
     private static final LuckPerms LP = LuckPermsProvider.get();
 
     public static void register(ProxyServer server) {
         server.getCommandManager().register(
                 new BrigadierCommand(
                         LiteralArgumentBuilder.<CommandSource>literal("switch")
-                                .executes(c -> execute(c.getSource()))
+                                .requires(source -> source instanceof Player)
+                                .executes(c -> execute((Player) c.getSource()))
                                 .then(RequiredArgumentBuilder.<CommandSource, String>argument("group", StringArgumentType.greedyString())
-                                        .executes(c -> executeWithGroups(c.getSource(), StringArgumentType.getString(c, "group").split("\\s+")))
+                                        .executes(c -> executeWithGroups((Player) c.getSource(), StringArgumentType.getString(c, "group").split("\\s+")))
                                 )
                 )
         );
@@ -58,20 +55,14 @@ public class SwitchCommand {
         return server;
     }
 
-    private static int execute(CommandSource source) throws CommandSyntaxException {
-        if (!(source instanceof Player player)) {
-            throw EXPECTED_PLAYER.create();
-        }
+    private static int execute(Player player) {
         String server = checkSwitch(player);
         if (server == null) return 0;
         switchGroups(player, AziSwitchVelocity.instance.getConfig().getAllGroups(), server);
         return 0;
     }
 
-    private static int executeWithGroups(CommandSource source, String[] groups) throws CommandSyntaxException {
-        if (!(source instanceof Player player)) {
-            throw EXPECTED_PLAYER.create();
-        }
+    private static int executeWithGroups(Player player, String[] groups) {
         String server = checkSwitch(player);
         if (server == null) return 0;
         List<String> validGroups = new ArrayList<>();
@@ -79,7 +70,7 @@ public class SwitchCommand {
             if (AziSwitchVelocity.instance.getConfig().contains(group)) {
                 validGroups.add(group);
             } else {
-                source.sendMessage(Component.text("")
+                player.sendMessage(Component.text("")
                         .append(Component.text(group, NamedTextColor.GOLD))
                         .append(Component.text("はswitchできません", NamedTextColor.RED)));
             }
@@ -104,7 +95,7 @@ public class SwitchCommand {
             LP.getUserManager().saveUser(user);
             LP.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
         } else {
-            player.sendMessage(Component.text("権限がありません。" + Util.WHO + "に泣きつきましょう！", NamedTextColor.RED));
+            player.sendMessage(Component.text("権限がありません。", NamedTextColor.RED));
         }
     }
 
