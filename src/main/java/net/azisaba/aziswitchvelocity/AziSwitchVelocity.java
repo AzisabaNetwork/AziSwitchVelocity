@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "aziswitch", name = "AziSwitchVelocity", version = "1.1.0", authors = "Azisaba Network",
+@Plugin(id = "aziswitch", name = "AziSwitchVelocity", version = "1.1.3", authors = "Azisaba Network",
         description = "Switch permission groups.", dependencies = @Dependency(id = "luckperms"))
 public class AziSwitchVelocity {
     public static AziSwitchVelocity instance;

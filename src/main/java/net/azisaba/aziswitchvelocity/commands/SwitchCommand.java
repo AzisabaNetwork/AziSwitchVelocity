@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,7 +87,7 @@ public class SwitchCommand {
         List<String> contextualGroups = AziSwitchVelocity.instance.getConfig().getContextualGroups();
         User user = LP.getPlayerAdapter(Player.class).getUser(player);
         boolean acted = false;
-        for (String group : groups) {
+        for (String group : new HashSet<>(groups)) {
             if (doSwitch(player, user, group, contextualGroups.contains(group) ? server : null)) {
                 acted = true;
             }
