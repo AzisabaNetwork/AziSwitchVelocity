@@ -1,14 +1,11 @@
 package net.azisaba.aziswitchvelocity;
 
-import com.google.common.reflect.TypeToken;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.ServerInfo;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +23,6 @@ public class ASVConfig {
     private final List<String> nonContextualGroups = new ArrayList<>();
     private final Map<String, String> servers = new HashMap<>();
 
-    @SuppressWarnings("UnstableApiUsage")
     public void reload() {
         contextualGroups.clear();
         nonContextualGroups.clear();
@@ -55,25 +51,23 @@ public class ASVConfig {
             }
         }
         try {
-            ConfigurationNode node = YAMLConfigurationLoader.builder().setPath(configPath).build().load();
-            try {
-                contextualGroups.addAll(node.getNode("contextualGroups").getList(TypeToken.of(String.class)));
-            } catch (ObjectMappingException e) {
-                AziSwitchVelocity.instance.getLogger().warn("Failed to load contextualGroups", e);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(Files.newInputStream(configPath));
+            if (map.get("contextualGroups") instanceof List<?> contextualGroupsList) {
+                contextualGroups.addAll(contextualGroupsList.stream().filter(String.class::isInstance).map(String.class::cast).toList());
             }
-            try {
-                nonContextualGroups.addAll(node.getNode("nonContextualGroups").getList(TypeToken.of(String.class)));
-            } catch (ObjectMappingException e) {
-                AziSwitchVelocity.instance.getLogger().warn("Failed to load nonContextualGroups", e);
+            if (map.get("nonContextualGroups") instanceof List<?> nonContextualGroupsList) {
+                nonContextualGroups.addAll(nonContextualGroupsList.stream().filter(String.class::isInstance).map(String.class::cast).toList());
             }
-            node.getNode("servers").getChildrenMap().forEach((k, v) -> {
-                String server = String.valueOf(k);
-                String contextServer = v.getString();
-                if (k != null && contextServer != null) {
-                    servers.put(server, contextServer);
-                }
-            });
-        } catch (IOException ignore) {
+            if (map.get("servers") instanceof Map<?, ?> serversMap) {
+                serversMap.forEach((k, v) -> {
+                    if (k instanceof String server && v instanceof String contextServer) {
+                        servers.put(server, contextServer);
+                    }
+                });
+            }
+        } catch (IOException ex) {
+            AziSwitchVelocity.instance.getLogger().warn("Failed to read config.yml", ex);
         }
     }
 
@@ -96,13 +90,8 @@ public class ASVConfig {
 
     @Nullable
     public String getContextualServer(@Nullable Player player) {
-        if (player == null) {
-            return null;
-        }
+        if (player == null) return null;
         Optional<ServerInfo> server = player.getCurrentServer().map(ServerConnection::getServerInfo);
-        if (server.isEmpty()) {
-            return null;
-        }
-        return servers.get(server.get().getName());
+        return server.map(serverInfo -> servers.get(serverInfo.getName())).orElse(null);
     }
 }
