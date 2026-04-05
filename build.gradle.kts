@@ -3,26 +3,28 @@ plugins {
 }
 
 group = "net.azisaba"
-version = "1.1.3"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
 
     // velocity repo
-    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven("https://repo.papermc.io/repository/maven-public/") {
+        name = "papermc-repo"
+    }
 }
 
 dependencies {
     // velocity-api
-    compileOnly("com.velocitypowered:velocity-api:3.0.1")
-    annotationProcessor("com.velocitypowered:velocity-api:3.0.1")
+    compileOnly("com.velocitypowered:velocity-api:3.5.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.5.0-SNAPSHOT")
 
     // luckperms api
     compileOnly("net.luckperms:api:5.4")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {
